@@ -1,0 +1,74 @@
+# haggingface error
+HTTPError Traceback (most recent call last)
+File /usr/local/lib/python3.10/dist-packages/huggingface_hub/utils/_http.py:406, in hf_raise_for_status(response, endpoint_name)
+405 try:
+--> 406 response.raise_for_status()
+407 except HTTPError as e:
+
+File /usr/local/lib/python3.10/dist-packages/requests/models.py:1024, in Response.raise_for_status(self)
+1023 if http_error_msg:
+-> 1024 raise HTTPError(http_error_msg, response=self)
+
+HTTPError: 403 Client Error: Forbidden for url: https://huggingface.co/api/repos/create
+
+The above exception was the direct cause of the following exception:
+
+HfHubHTTPError Traceback (most recent call last)
+Cell In[24], line 2
+1 # モデルとトークナイザーをHugging Faceにアップロード
+----> 2 model.push_to_hub(new_model_id, token=HF_TOKEN, private=True) # Online saving
+3 tokenizer.push_to_hub(new_model_id, token=HF_TOKEN, private=True) # Online saving
+
+File /usr/local/lib/python3.10/dist-packages/transformers/utils/hub.py:933, in PushToHubMixin.push_to_hub(self, repo_id, use_temp_dir, commit_message, private, token, max_shard_size, create_pr, safe_serialization, revision, commit_description, tags, **deprecated_kwargs)
+930 repo_url = deprecated_kwargs.pop("repo_url", None)
+931 organization = deprecated_kwargs.pop("organization", None)
+--> 933 repo_id = self._create_repo(
+934 repo_id, private=private, token=token, repo_url=repo_url, organization=organization
+935 )
+937 # Create a new empty model card and eventually tag it
+938 model_card = create_and_tag_model_card(
+939 repo_id, tags, token=token, ignore_metadata_errors=ignore_metadata_errors
+940 )
+
+File /usr/local/lib/python3.10/dist-packages/transformers/utils/hub.py:740, in PushToHubMixin._create_repo(self, repo_id, private, token, repo_url, organization)
+737 repo_id = repo_id.split("/")[-1]
+738 repo_id = f"{organization}/{repo_id}"
+--> 740 url = create_repo(repo_id=repo_id, token=token, private=private, exist_ok=True)
+741 return url.repo_id
+
+File /usr/local/lib/python3.10/dist-packages/huggingface_hub/utils/_validators.py:114, in validate_hf_hub_args.<locals>._inner_fn(*args, **kwargs)
+111 if check_use_auth_token:
+112 kwargs = smoothly_deprecate_use_auth_token(fn_name=fn.__name__, has_token=has_token, kwargs=kwargs)
+--> 114 return fn(*args, **kwargs)
+
+File /usr/local/lib/python3.10/dist-packages/huggingface_hub/hf_api.py:3544, in HfApi.create_repo(self, repo_id, token, private, repo_type, exist_ok, resource_group_id, space_sdk, space_hardware, space_storage, space_sleep_time, space_secrets, space_variables)
+3542 return RepoUrl(f"{self.endpoint}/{repo_type}/{repo_id}")
+3543 except HfHubHTTPError:
+-> 3544 raise err
+3545 else:
+3546 raise
+
+File /usr/local/lib/python3.10/dist-packages/huggingface_hub/hf_api.py:3531, in HfApi.create_repo(self, repo_id, token, private, repo_type, exist_ok, resource_group_id, space_sdk, space_hardware, space_storage, space_sleep_time, space_secrets, space_variables)
+3528 break
+3530 try:
+-> 3531 hf_raise_for_status(r)
+3532 except HTTPError as err:
+3533 if exist_ok and err.response.status_code == 409:
+3534 # Repo already exists and `exist_ok=True`
+
+File /usr/local/lib/python3.10/dist-packages/huggingface_hub/utils/_http.py:468, in hf_raise_for_status(response, endpoint_name)
+462 elif response.status_code == 403:
+463 message = (
+464 f"\n\n{response.status_code} Forbidden: {error_message}."
+465 + f"\nCannot access content at: {response.url}."
+466 + "\nMake sure your token has the correct permissions."
+467 )
+--> 468 raise _format(HfHubHTTPError, message, response) from e
+470 elif response.status_code == 416:
+471 range_header = response.request.headers.get("Range")
+
+HfHubHTTPError: (Request ID: Root=xxxxxxxx)
+
+403 Forbidden: You don't have the rights to create a model under the namespace "kaizen-nagoya".
+Cannot access content at: https://huggingface.co/api/repos/create.
+Make sure your token has the correct permissions.
