@@ -1,0 +1,79 @@
+# Hugging face And Colab Error
+## Request
+This errer is happend 
+" /usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_auth.py:94: UserWarning: 
+  The secret HF_TOKEN does not exist in your Colab secrets. To authenticate with the Hugging Face Hub, create a token in your settings tab
+  (https://huggingface.co/settings/tokens), set it as secret in your Google Colab and restart your session. 
+  You will be able to reuse this secret in all of your notebooks. Please note that authentication is recommended but still optional to access public models or datasets. warnings.warn( README.md: 100%  7.78k/7.78k [00:00<00:00, 780kB/s] 
+  --------------------------------------------------------------------------- 
+  HTTPError Traceback (most recent call last)" 
+How can I resolve above?
+## Answer by ChatGPT
+You can fix this error by **adding your Hugging Face token to Colab**.
+Here is the **exact procedure**.
+# ✅ **Why the error happens**
+Colab is telling you:
+* You tried to access Hugging Face Hub (model/dataset download).
+* It looked for a secret named **HF_TOKEN**.
+* That secret does **not** exist in your Colab environment.
+* So authentication failed → **HTTPError**.
+# ✅ **How to fix**
+## **✔️ Step 1 — Get a Hugging Face Token**
+Go to:
+🔗 [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+Click:
+**New Token → choose "read" → Create**
+Copy the token.
+## **✔️ Step 2 — Add the token to Google Colab**
+In Colab:
+### Option A — Use “Secrets” (Recommended)
+1. Left sidebar → click **🔐 “Secrets”**
+   (If you don't see it, click the key-icon tab)
+2. Click **+ Add new secret**
+3. **Name:** `HF_TOKEN`
+4. **Value:** *your token*
+5. Save
+Colab will securely store your token.
+Then add:
+```python
+from huggingface_hub import login
+login(token=True)
+```
+or simply:
+```python
+from huggingface_hub import login
+login()
+```
+Colab will automatically read the `HF_TOKEN` secret.
+### Option B — Use login() directly in code
+You can also bypass secrets and login manually:
+```python
+from huggingface_hub import login
+login("hf_xxxxxxxxxxxxxxxxxxxxx")
+```
+⚠️ Not secure → your token appears in notebook history.
+## **✔️ Step 3 — Verify login**
+Run:
+```python
+!huggingface-cli whoami
+```
+You should see your username (kaizen-nagoya).
+## **✔️ Step 4 — Try your download again**
+For example:
+```python
+from datasets import load_dataset
+ds = load_dataset("some_dataset")
+```
+Now it should work without HTTPError.
+# 📝 **If the model is private**
+You MUST be logged in and have `read` access.
+If it's public, token is optional but avoids rate limits.
+# ✅ Summary
+| Problem                    | Fix                                   |
+| -------------------------- | ------------------------------------- |
+| “HF_TOKEN does not exist”  | Add secret `HF_TOKEN` with your token |
+| HTTPError when downloading | Authenticate with `login()`           |
+| Old token lost             | Create new token                      |
+
+If you want, tell me which model/dataset you were loading, and I can verify whether it needs authentication.
+  
