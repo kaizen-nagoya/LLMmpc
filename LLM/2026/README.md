@@ -20,7 +20,10 @@ https://github.com/kaizen-nagoya/LLMmpc/blob/main/LLM/2026/WorkflowsVSAgents.md
  System installation, execution results and errors.
  Background theory and experience.
  
-CAD, CAM and CAE
+## CAD, CAM and CAE
+Large Language Models for Computer-Aided Design: A Survey
+https://arxiv.org/pdf/2505.08137
+
 
 STARC RTL verilog HDL/VHDL
 
